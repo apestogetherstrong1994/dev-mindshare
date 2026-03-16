@@ -31,17 +31,3 @@ export function formatCompactDate(dateStr) {
     day: 'numeric',
   });
 }
-
-export function formatCurrency(n, decimals = 1) {
-  if (n === null || n === undefined) return 'N/A';
-  if (Math.abs(n) >= 1e12) return `$${(n / 1e12).toFixed(decimals)}T`;
-  if (Math.abs(n) >= 1e9) return `$${(n / 1e9).toFixed(decimals)}B`;
-  if (Math.abs(n) >= 1e6) return `$${(n / 1e6).toFixed(decimals)}M`;
-  if (Math.abs(n) >= 1e3) return `$${(n / 1e3).toFixed(decimals)}K`;
-  return `$${n.toLocaleString()}`;
-}
-
-export function formatMultiple(n) {
-  if (n === null || n === undefined) return 'N/A';
-  return `${n.toFixed(1)}x`;
-}

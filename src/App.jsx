@@ -1,4 +1,3 @@
-import DashboardSwitcher from './components/layout/DashboardSwitcher';
 import Header from './components/sections/Header';
 import ExecutiveScoreboard from './components/sections/ExecutiveScoreboard';
 import SdkDownloadTrends from './components/sections/SdkDownloadTrends';
@@ -13,7 +12,6 @@ import SourcesMethodology from './components/sections/SourcesMethodology';
 export default function App() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <DashboardSwitcher active="ecosystem" />
       <Header />
       <ExecutiveScoreboard />
       <SdkDownloadTrends />
