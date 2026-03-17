@@ -3,6 +3,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts'
 import Section from '../layout/Section';
 import ChartContainer from '../charts/ChartContainer';
 import CustomTooltip from '../charts/CustomTooltip';
+import Footnote from '../ui/Footnote';
 import { mcpEcosystem } from '../../data/mcp-ecosystem';
 import { npmDownloads } from '../../data/npm-downloads';
 import { formatNumber } from '../../utils/formatters';
@@ -109,6 +110,11 @@ export default function McpEcosystem() {
           ))}
         </div>
       </div>
+      <Footnote lines={[
+        'npm downloads from api.npmjs.org for @modelcontextprotocol/sdk. PyPI downloads from pypistats.org for "mcp" package. Both fetched 2026-03-13.',
+        'MCP SDK downloads include both first-party (Anthropic) and third-party usage. The protocol is open and adopted by multiple providers including OpenAI, Google, and Microsoft.',
+        'Adopter list compiled from public announcements and integration documentation. "Registered Servers" is an approximate count from the MCP registry and community directories.',
+      ]} />
     </Section>
   );
 }

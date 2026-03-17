@@ -1,11 +1,11 @@
 import { useMemo } from 'react';
 import Section from '../layout/Section';
+import Footnote from '../ui/Footnote';
 import { PROVIDERS, PROVIDER_ORDER } from '../../data/providers';
 import { npmDownloads } from '../../data/npm-downloads';
 import { pypiDownloads } from '../../data/pypi-downloads';
 import { githubMetrics } from '../../data/github-metrics';
 import { discourse } from '../../data/discourse';
-import { jobMarket } from '../../data/job-market';
 import { computeCompositeScores } from '../../utils/calculations';
 import { formatNumber } from '../../utils/formatters';
 
@@ -42,9 +42,8 @@ export default function ExecutiveScoreboard() {
       const ghStars = (githubMetrics.sdks[id]?.python?.stars || 0) + (githubMetrics.sdks[id]?.typescript?.stars || 0);
       const hnMentions = discourse.hackerNews[id]?.last30d?.stories || 0;
       const soQuestions = discourse.stackOverflow[id]?.totalQuestions || 0;
-      const jobs = jobMarket.postings[id]?.approximate || 0;
 
-      result[id] = { npmWeekly, pypiMonthly, ghStars, hnMentions, soQuestions, jobs };
+      result[id] = { npmWeekly, pypiMonthly, ghStars, hnMentions, soQuestions };
     }
     return result;
   }, []);
@@ -56,7 +55,6 @@ export default function ExecutiveScoreboard() {
     ghStars: Math.max(...Object.values(metrics).map(m => m.ghStars)),
     hnMentions: Math.max(...Object.values(metrics).map(m => m.hnMentions)),
     soQuestions: Math.max(...Object.values(metrics).map(m => m.soQuestions)),
-    jobs: Math.max(...Object.values(metrics).map(m => m.jobs)),
   }), [metrics]);
 
   return (
@@ -83,7 +81,6 @@ export default function ExecutiveScoreboard() {
                 <MetricRow label="GitHub Stars" value={m.ghStars} maxValue={maxValues.ghStars} color={provider.color} />
                 <MetricRow label="HN (30d)" value={m.hnMentions} maxValue={maxValues.hnMentions} color={provider.color} />
                 <MetricRow label="SO Questions" value={m.soQuestions} maxValue={maxValues.soQuestions} color={provider.color} />
-                <MetricRow label="Job Postings" value={m.jobs} maxValue={maxValues.jobs} color={provider.color} />
               </div>
 
               <div className="mt-4 pt-3 border-t border-terminal-border">
@@ -101,6 +98,10 @@ export default function ExecutiveScoreboard() {
           );
         })}
       </div>
+      <Footnote lines={[
+        'Ecosystem Score is a weighted composite of 5 dimensions: SDK downloads (30%), discourse (25%), ecosystem breadth (20%), GitHub health (15%), growth momentum (10%). Each dimension normalized 0–100 where the top provider = 100.',
+        'npm data from api.npmjs.org, PyPI from pypistats.org, GitHub from api.github.com, HN from hn.algolia.com, SO from api.stackexchange.com. All fetched 2026-03-13.',
+      ]} />
     </Section>
   );
 }

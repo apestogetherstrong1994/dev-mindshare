@@ -4,6 +4,7 @@ import {
 } from 'recharts';
 import Section from '../layout/Section';
 import ChartContainer from '../charts/ChartContainer';
+import Footnote from '../ui/Footnote';
 import { PROVIDERS, PROVIDER_ORDER } from '../../data/providers';
 import { computeCompositeScores } from '../../utils/calculations';
 
@@ -11,17 +12,15 @@ const DIMENSION_LABELS = {
   sdkAdoption: 'SDK Adoption',
   githubHealth: 'GitHub Health',
   discourse: 'Discourse',
-  jobMarket: 'Job Market',
   ecosystemBreadth: 'Ecosystem',
   growthMomentum: 'Growth',
 };
 
 const WEIGHTS = {
-  sdkAdoption: '25%',
+  sdkAdoption: '30%',
   githubHealth: '15%',
-  discourse: '20%',
-  jobMarket: '15%',
-  ecosystemBreadth: '15%',
+  discourse: '25%',
+  ecosystemBreadth: '20%',
   growthMomentum: '10%',
 };
 
@@ -122,6 +121,10 @@ export default function CompositeIndex() {
           </div>
         </div>
       </div>
+      <Footnote lines={[
+        'Job market data excluded from composite scoring — search-based estimates are too noisy for a quantitative index. Job market signals are presented qualitatively in Section 05.',
+        'This is a directional heuristic, not a definitive ranking. Weights reflect the author\'s judgment of signal importance and data reliability.',
+      ]} />
     </Section>
   );
 }

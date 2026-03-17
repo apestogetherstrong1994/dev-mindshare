@@ -5,6 +5,7 @@ import {
 import Section from '../layout/Section';
 import ChartContainer from '../charts/ChartContainer';
 import CustomTooltip from '../charts/CustomTooltip';
+import Footnote from '../ui/Footnote';
 import { PROVIDERS, PROVIDER_ORDER } from '../../data/providers';
 import { discourse } from '../../data/discourse';
 import { formatNumber } from '../../utils/formatters';
@@ -88,6 +89,11 @@ export default function DeveloperDiscourse() {
           </BarChart>
         </ChartContainer>
       </div>
+      <Footnote lines={[
+        'HN: hn.algolia.com/api. Search terms — Anthropic: "anthropic" OR "claude ai" OR "claude api"; OpenAI: "openai"; Google: "gemini ai" OR "google ai". xAI excluded (inflated by unrelated "xai" matches).',
+        'SO: api.stackexchange.com. Tag-based counts. The "anthropic" tag has very few questions (most Claude questions use other tags), so SO undercounts Anthropic activity.',
+        'Reddit: Public JSON endpoint (/r/{sub}/about.json). Subscriber counts only; active user counts unavailable without authentication.',
+      ]} />
     </Section>
   );
 }

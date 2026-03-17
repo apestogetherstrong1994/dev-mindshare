@@ -2,7 +2,6 @@ import { npmDownloads } from '../data/npm-downloads';
 import { pypiDownloads } from '../data/pypi-downloads';
 import { githubMetrics } from '../data/github-metrics';
 import { discourse } from '../data/discourse';
-import { jobMarket } from '../data/job-market';
 import { mcpEcosystem } from '../data/mcp-ecosystem';
 import { PROVIDER_ORDER } from '../data/providers';
 
@@ -55,11 +54,14 @@ function normalize(value, max) {
 }
 
 // Compute composite ecosystem scores for all providers
+// 5 dimensions (job market removed — data is too noisy for a quantitative index):
+//   SDK Adoption (30%), Discourse (25%), Ecosystem Breadth (20%),
+//   GitHub Health (15%), Growth Momentum (10%)
 export function computeCompositeScores() {
   const scores = {};
 
   for (const id of PROVIDER_ORDER) {
-    // SDK Adoption (25%) — npm + PyPI combined
+    // SDK Adoption (30%) — npm + PyPI combined
     const npmWeekly = npmDownloads.primary[id]?.weeklyDownloads || 0;
     const pypiMonthly = id === 'google'
       ? (pypiDownloads.primary.googleGenai?.lastMonth || 0)
@@ -70,14 +72,11 @@ export function computeCompositeScores() {
       (githubMetrics.sdks[id]?.typescript?.stars || 0);
     const cookbookStars = githubMetrics.cookbooks[id]?.stars || 0;
 
-    // Discourse (20%)
+    // Discourse (25%)
     const hnStories = discourse.hackerNews[id]?.last30d?.stories || 0;
     const soQuestions = discourse.stackOverflow[id]?.totalQuestions || 0;
 
-    // Job Market (15%)
-    const jobCount = jobMarket.postings[id]?.approximate || 0;
-
-    // Ecosystem Breadth (15%) — cookbooks + frameworks + MCP
+    // Ecosystem Breadth (20%) — cookbooks + frameworks + MCP
     const ecosystemScore = cookbookStars + (id === 'anthropic' ? mcpEcosystem.github.totalStars : 0);
 
     // Growth Momentum (10%)
@@ -90,7 +89,6 @@ export function computeCompositeScores() {
       cookbookStars,
       hnStories,
       soQuestions,
-      jobCount,
       ecosystemScore,
       npmGrowth,
     };
@@ -102,7 +100,6 @@ export function computeCompositeScores() {
   const maxStars = Math.max(...Object.values(scores).map(s => s.sdkStars));
   const maxHn = Math.max(...Object.values(scores).map(s => s.hnStories));
   const maxSo = Math.max(...Object.values(scores).map(s => s.soQuestions));
-  const maxJobs = Math.max(...Object.values(scores).map(s => s.jobCount));
   const maxEco = Math.max(...Object.values(scores).map(s => s.ecosystemScore));
   const maxGrowth = Math.max(...Object.values(scores).map(s => Math.abs(s.npmGrowth || 0)));
 
@@ -114,17 +111,15 @@ export function computeCompositeScores() {
       sdkAdoption: (normalize(s.npmWeekly, maxNpm) + normalize(s.pypiMonthly, maxPypi)) / 2,
       githubHealth: (normalize(s.sdkStars, maxStars) + normalize(s.cookbookStars, Math.max(...Object.values(scores).map(sc => sc.cookbookStars)))) / 2,
       discourse: (normalize(s.hnStories, maxHn) + normalize(s.soQuestions, maxSo)) / 2,
-      jobMarket: normalize(s.jobCount, maxJobs),
       ecosystemBreadth: normalize(s.ecosystemScore, maxEco),
       growthMomentum: s.npmGrowth ? normalize(Math.abs(s.npmGrowth), maxGrowth) * (s.npmGrowth > 0 ? 1 : 0.5) : 0,
     };
 
     const weights = {
-      sdkAdoption: 0.25,
+      sdkAdoption: 0.30,
       githubHealth: 0.15,
-      discourse: 0.20,
-      jobMarket: 0.15,
-      ecosystemBreadth: 0.15,
+      discourse: 0.25,
+      ecosystemBreadth: 0.20,
       growthMomentum: 0.10,
     };
 
@@ -190,11 +185,11 @@ export function generateInsights() {
     text: `Within Vercel's AI SDK (the largest multi-provider framework), Anthropic holds ${Math.round(aiSdkAnthropicPct * 100)}% of provider downloads — near-parity with OpenAI's ${Math.round(npmDownloads.aiSdk.openai.monthlyDownloads / (npmDownloads.aiSdk.anthropic.monthlyDownloads + npmDownloads.aiSdk.openai.monthlyDownloads + npmDownloads.aiSdk.google.monthlyDownloads) * 100)}%.`,
   });
 
-  // Job posting growth
+  // Job listing growth (reworded for accuracy)
   insights.push({
     type: 'jobs',
     severity: 'medium',
-    text: `Job postings mentioning Claude/Anthropic API have grown ~85% in the last 6 months, the fastest growth rate among established providers.`,
+    text: `Third-party job listings mentioning Claude/Anthropic API have grown ~85% in 6 months, the fastest growth rate among established providers. OpenAI still leads at ~3.8x Anthropic's volume.`,
   });
 
   // GitHub cookbooks

@@ -1,5 +1,6 @@
 import Section from '../layout/Section';
 import DataTable from '../ui/DataTable';
+import Footnote from '../ui/Footnote';
 import { PROVIDERS, PROVIDER_ORDER } from '../../data/providers';
 import { githubMetrics } from '../../data/github-metrics';
 import { formatNumber } from '../../utils/formatters';
@@ -83,6 +84,11 @@ export default function GitHubHealthMatrix() {
           </div>
         ))}
       </div>
+      <Footnote lines={[
+        'Source: GitHub REST API (api.github.com/repos). 60 req/hr unauthenticated. Snapshot values only, fetched 2026-03-13.',
+        'Google Gemini SDK repos were renamed to deprecated-* during the data collection period; current google-genai repos may differ. xAI has no public SDK repos.',
+        'Fork:Star ratio is a rough engagement signal — higher ratios suggest more active reuse. MCP Ecosystem Stars sums modelcontextprotocol/servers, /python-sdk, and /typescript-sdk.',
+      ]} />
     </Section>
   );
 }

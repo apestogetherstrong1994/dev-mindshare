@@ -7,6 +7,7 @@ import Section from '../layout/Section';
 import ChartContainer from '../charts/ChartContainer';
 import CustomTooltip from '../charts/CustomTooltip';
 import StatCard from '../ui/StatCard';
+import Footnote from '../ui/Footnote';
 import { PROVIDERS, PROVIDER_ORDER } from '../../data/providers';
 import { npmDownloads } from '../../data/npm-downloads';
 import { computeMoMGrowth, compute3MonthAcceleration, computeMarketShare } from '../../utils/calculations';
@@ -166,6 +167,11 @@ export default function SdkDownloadTrends() {
           </PieChart>
         </ChartContainer>
       </div>
+      <Footnote lines={[
+        'Source: npm Registry API (api.npmjs.org/downloads/range). Public, unauthenticated. ~1,000 req/hr rate limit. Fetched 2026-03-13.',
+        'Downloads include CI/CD pipelines and bots — not a 1:1 proxy for unique developers. Relative comparisons between providers are more meaningful than absolute counts.',
+        'Market share calculated from monthly download totals within each tab\'s package set. MoM growth uses the two most recent full months (excludes partial March 2026).',
+      ]} />
     </Section>
   );
 }

@@ -4,6 +4,7 @@ import Section from '../layout/Section';
 import ChartContainer from '../charts/ChartContainer';
 import CustomTooltip from '../charts/CustomTooltip';
 import InsightCard from '../ui/InsightCard';
+import Footnote from '../ui/Footnote';
 import { PROVIDERS, PROVIDER_ORDER } from '../../data/providers';
 import { jobMarket } from '../../data/job-market';
 import { formatNumber, formatPercent } from '../../utils/formatters';
@@ -19,10 +20,10 @@ export default function JobMarketSignals() {
   []);
 
   return (
-    <Section number={5} title="Job Market Signals" subtitle="Job postings mentioning each provider's API/SDK" id="jobs">
+    <Section number={5} title="Job Market Signals" subtitle="Third-party job listings mentioning each provider's API/SDK" id="jobs">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2">
-          <ChartContainer height={250} title="Active Job Postings (Approximate)">
+          <ChartContainer height={250} title="Listings Mentioning Provider API (Estimated)">
             <BarChart data={chartData} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
               <XAxis
@@ -41,7 +42,7 @@ export default function JobMarketSignals() {
                 width={80}
               />
               <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="postings" name="Job Postings" radius={[0, 4, 4, 0]}>
+              <Bar dataKey="postings" name="Listings" radius={[0, 4, 4, 0]}>
                 {chartData.map((entry, i) => (
                   <Cell key={i} fill={entry.color} />
                 ))}
@@ -79,6 +80,11 @@ export default function JobMarketSignals() {
           <InsightCard key={i} type={signal.type} severity="medium" text={signal.text} />
         ))}
       </div>
+      <Footnote lines={[
+        'Source: Manual LinkedIn Jobs and Indeed searches for API/SDK terms in job descriptions, March 2026. These count third-party listings mentioning each provider\'s API — NOT each company\'s own open roles.',
+        'Counts are rough order-of-magnitude estimates. Listings may mention multiple providers (double-counting). "Vertex AI" inflates Google\'s count by capturing broader GCP jobs. Ratios between providers are more meaningful than absolute numbers.',
+        'Growth rates estimated by comparing current search totals against a similar search ~6 months prior. This data is excluded from the Composite Ecosystem Index due to its inherent noise.',
+      ]} />
     </Section>
   );
 }
