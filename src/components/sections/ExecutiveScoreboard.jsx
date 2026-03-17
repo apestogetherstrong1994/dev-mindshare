@@ -100,7 +100,7 @@ export default function ExecutiveScoreboard() {
       </div>
       <Footnote lines={[
         'Ecosystem Score is a weighted composite of 5 dimensions: SDK downloads (30%), discourse (25%), ecosystem breadth (20%), GitHub health (15%), growth momentum (10%). Each dimension normalized 0–100 where the top provider = 100.',
-        'npm data from api.npmjs.org, PyPI from pypistats.org, GitHub from api.github.com, HN from hn.algolia.com, SO from api.stackexchange.com. All fetched 2026-03-13.',
+        'npm: api.npmjs.org (daily, 7-day avg). PyPI: pypistats.org. GitHub: api.github.com. HN: hn.algolia.com (multi-term search). SO: api.stackexchange.com (comprehensive tags — 9 for Anthropic, 8 for OpenAI, 7 for Google). All fetched 2026-03-17.',
       ]} />
     </Section>
   );

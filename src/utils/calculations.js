@@ -167,7 +167,7 @@ export function generateInsights() {
   insights.push({
     type: 'ecosystem',
     severity: 'high',
-    text: `MCP ecosystem now exceeds 182M combined monthly SDK downloads (npm + PyPI), larger than any single provider SDK. This positions MCP as infrastructure-layer software.`,
+    text: `MCP npm SDK downloads reached ${Math.round(mcpEcosystem.npmMonthly / 1e6)}M/month in Feb 2026 — ${(mcpEcosystem.npmMonthly / npmDownloads.primary.anthropic.monthlyDownloads).toFixed(1)}x Anthropic's own SDK. Combined with PyPI (${Math.round(mcpEcosystem.pypiMonthly / 1e6)}M, though likely inflated by CI/mirrors), MCP is becoming infrastructure-layer software.`,
   });
 
   // Market share convergence

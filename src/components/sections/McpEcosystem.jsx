@@ -116,6 +116,14 @@ export default function McpEcosystem() {
           ))}
         </div>
       </div>
+      {/* PyPI caveat */}
+      <div className="mt-4 bg-yellow-900/10 border border-yellow-700/30 rounded-lg p-4">
+        <p className="text-[10px] font-mono text-yellow-600/80 uppercase tracking-widest mb-1">Caveat: PyPI download numbers</p>
+        <p className="text-[11px] font-mono text-terminal-muted leading-relaxed">
+          The PyPI figure ({formatNumber(mcpEcosystem.pypiMonthly)}/month) may be significantly inflated. PyPI download stats are notoriously noisy — CI/CD pipelines, mirrors, and bots can inflate counts by 2–10x. The npm figure is more reliable. Treat the combined 182.5M as an upper bound; true unique-developer usage is likely much lower.
+        </p>
+      </div>
+
       <Footnote lines={[
         'npm downloads from api.npmjs.org for @modelcontextprotocol/sdk (daily, 2025-03-01 to 2026-03-17, 7-day rolling average). PyPI downloads from pypistats.org for "mcp" package (Feb 2026 monthly total).',
         'MCP SDK downloads include both first-party (Anthropic) and third-party usage. The protocol is open and adopted by multiple providers including OpenAI, Google, and Microsoft.',

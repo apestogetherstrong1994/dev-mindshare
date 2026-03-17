@@ -122,6 +122,7 @@ export default function CompositeIndex() {
         </div>
       </div>
       <Footnote lines={[
+        'Inputs: npm daily downloads (api.npmjs.org, 7-day rolling avg), PyPI monthly (pypistats.org), GitHub stars/forks (api.github.com), HN stories (hn.algolia.com), SO questions (api.stackexchange.com with comprehensive tag coverage). All data fetched 2026-03-17.',
         'Job market data excluded from composite scoring — search-based estimates are too noisy for a quantitative index. Job market signals are presented qualitatively in Section 05.',
         'This is a directional heuristic, not a definitive ranking. Weights reflect the author\'s judgment of signal importance and data reliability.',
       ]} />
