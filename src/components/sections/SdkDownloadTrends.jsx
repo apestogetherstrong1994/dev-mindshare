@@ -129,11 +129,11 @@ export default function SdkDownloadTrends() {
           return (
             <StatCard
               key={id}
-              label={`${PROVIDERS[id]?.name} MoM Growth`}
+              label={`${PROVIDERS[id]?.name} (Feb '26)`}
               value={g.monthly}
-              formattedValue={formatNumber(g.weekly) + '/wk'}
+              formattedValue={formatNumber(g.monthly) + '/mo'}
               delta={g.mom}
-              deltaLabel="MoM"
+              deltaLabel="vs Jan"
               color={PROVIDERS[id]?.color}
               small
             />
