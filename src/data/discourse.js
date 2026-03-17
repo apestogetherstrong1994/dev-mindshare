@@ -55,26 +55,29 @@ export const discourse = {
   },
 
   stackOverflow: {
-    // Tags: claude (127) + anthropic (11) = 138. No synonyms detected.
+    // Tags: claude (127) + claude-code (28) + mcp-server (17) + anthropic (11) + sonnet (8) + mcps (4) + mcp-client (2) + python-anthropic (1) + mcpo (1) = 199
+    // Upper bound — some questions carry multiple tags
+    // Excluded: opus (402, audio codec), haiku (13, Haiku OS), dm-haiku (4, DeepMind JAX lib)
     anthropic: {
-      tags: ['claude', 'anthropic'],
-      totalQuestions: 138,
-      breakdown: { claude: 127, anthropic: 11 },
+      tags: ['claude', 'claude-code', 'mcp-server', 'anthropic', 'sonnet', 'mcps', 'mcp-client', 'python-anthropic', 'mcpo'],
+      totalQuestions: 199,
+      breakdown: { claude: 127, 'claude-code': 28, 'mcp-server': 17, anthropic: 11, sonnet: 8, mcps: 4, 'mcp-client': 2, 'python-anthropic': 1, mcpo: 1 },
+      note: 'opus tag (402 Qs) is audio codec, haiku tag (13 Qs) is Haiku OS — both excluded. Upper bound due to possible multi-tag overlap.',
     },
-    // Tags: openai-api (2895, includes openai/chatgpt/chat-gpt synonyms) + chatgpt-api (557) + gpt-4 (151) + gpt-3 (291) + openai-whisper (286) + gpt-5 (4)
+    // Tags: openai-api (2895, includes openai/chatgpt/chat-gpt synonyms) + chatgpt-api (557) + gpt-3 (291) + openai-whisper (286) + gpt-4 (151) + chatgpt-plugin (18) + chatgpt-function-call (16) + gpt-5 (4) = 4218
     // Upper bound — some questions carry multiple tags
     openai: {
-      tags: ['openai-api', 'chatgpt-api', 'gpt-4', 'gpt-3', 'openai-whisper', 'gpt-5'],
-      totalQuestions: 4184,
-      breakdown: { 'openai-api': 2895, 'chatgpt-api': 557, 'gpt-3': 291, 'openai-whisper': 286, 'gpt-4': 151, 'gpt-5': 4 },
+      tags: ['openai-api', 'chatgpt-api', 'gpt-3', 'openai-whisper', 'gpt-4', 'chatgpt-plugin', 'chatgpt-function-call', 'gpt-5'],
+      totalQuestions: 4218,
+      breakdown: { 'openai-api': 2895, 'chatgpt-api': 557, 'gpt-3': 291, 'openai-whisper': 286, 'gpt-4': 151, 'chatgpt-plugin': 18, 'chatgpt-function-call': 16, 'gpt-5': 4 },
       note: 'openai, chatgpt, chat-gpt are synonyms of openai-api (same 2895 questions). Upper bound due to possible multi-tag overlap.',
     },
-    // Tags: google-gemini (470) + palm-api (18) + google-cloud-aiplatform (13)
+    // Tags: google-gemini (470) + google-gemini-file-api (17) + palm-api (18) + google-cloud-aiplatform (13) + gemini-cli (5) + google-gemini-context-caching (3) + gemini-code-assist (2) = 528
     // "gemini" tag (34) is Countersoft bug-tracker — excluded
     google: {
-      tags: ['google-gemini', 'palm-api', 'google-cloud-aiplatform'],
-      totalQuestions: 501,
-      breakdown: { 'google-gemini': 470, 'palm-api': 18, 'google-cloud-aiplatform': 13 },
+      tags: ['google-gemini', 'palm-api', 'google-gemini-file-api', 'google-cloud-aiplatform', 'gemini-cli', 'google-gemini-context-caching', 'gemini-code-assist'],
+      totalQuestions: 528,
+      breakdown: { 'google-gemini': 470, 'palm-api': 18, 'google-gemini-file-api': 17, 'google-cloud-aiplatform': 13, 'gemini-cli': 5, 'google-gemini-context-caching': 3, 'gemini-code-assist': 2 },
       note: 'The "gemini" tag (34 questions) is for Countersoft bug-tracking software, not Google Gemini AI.',
     },
     // Tags: langchain (2189) + langchain-js (64)

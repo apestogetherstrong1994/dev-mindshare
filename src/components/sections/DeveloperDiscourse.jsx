@@ -34,7 +34,6 @@ export default function DeveloperDiscourse() {
   // SO data for bar chart — using comprehensive tag counts
   const soData = useMemo(() => [
     { name: 'OpenAI', total: discourse.stackOverflow.openai.totalQuestions, color: PROVIDERS.openai.color },
-    { name: 'LangChain', total: discourse.stackOverflow.langchain.totalQuestions, color: '#f59e0b' },
     { name: 'Google', total: discourse.stackOverflow.google.totalQuestions, color: PROVIDERS.google.color },
     { name: 'Anthropic', total: discourse.stackOverflow.anthropic.totalQuestions, color: PROVIDERS.anthropic.color },
   ], []);
@@ -87,7 +86,7 @@ export default function DeveloperDiscourse() {
             <YAxis tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={{ stroke: '#1e293b' }} tickLine={false} />
             <Tooltip content={<CustomTooltip />} />
             <Legend wrapperStyle={{ fontSize: 10, fontFamily: 'JetBrains Mono' }} />
-            {PROVIDER_ORDER.filter(id => discourse.hackerNews[id]).map(id => (
+            {['anthropic', 'openai', 'google'].map(id => (
               <Bar key={id} dataKey={id} name={PROVIDERS[id].name} fill={PROVIDERS[id].color} radius={[2, 2, 0, 0]} />
             ))}
           </BarChart>
@@ -161,7 +160,7 @@ export default function DeveloperDiscourse() {
 
       <Footnote lines={[
         'HN: hn.algolia.com/api. Search terms — Anthropic: "anthropic" + "claude ai" + "claude code" + "claude sonnet"; OpenAI: "openai" + "chatgpt" + "gpt-4"; Google: "gemini ai" + "google gemini" + "gemini pro". Counts summed across terms (some overlap possible). xAI excluded ("xai" matches unrelated terms). "claude" alone excluded (matches people named Claude).',
-        'SO: api.stackexchange.com. All relevant tags per provider combined. openai/chatgpt/chat-gpt are synonyms of openai-api (2,895 base). The "gemini" tag (34 Qs) is for Countersoft bug-tracker, not Google AI — excluded. Upper bounds due to possible multi-tag overlap.',
+        'SO: api.stackexchange.com. All relevant tags per provider combined. Anthropic: claude (127) + claude-code (28) + mcp-server (17) + anthropic (11) + sonnet (8) + 5 more = 199. "opus" tag (402) is audio codec, "haiku" tag (13) is Haiku OS — excluded. "gemini" tag (34) is Countersoft bug-tracker — excluded. Upper bounds due to possible multi-tag overlap.',
         'Reddit: Public JSON endpoint (/r/{sub}/about.json). General = consumer + discussion communities. Developer = coding/API-focused subreddits. r/Gemini (47K) is the crypto exchange — excluded. r/Bard (138K, now titled "r/Gemini") included under Google general.',
       ]} />
     </Section>
