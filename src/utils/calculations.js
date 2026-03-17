@@ -4,6 +4,7 @@ import { githubMetrics } from '../data/github-metrics';
 import { discourse } from '../data/discourse';
 import { mcpEcosystem } from '../data/mcp-ecosystem';
 import { PROVIDER_ORDER } from '../data/providers';
+import { computeMoMGrowthFromDaily, compute12MonthGrowthFromDaily, getFirstMonthTotal } from './daily-helpers';
 
 // Calculate month-over-month growth rate from a monthly trend array
 export function computeMoMGrowth(monthlyTrend) {
@@ -80,7 +81,9 @@ export function computeCompositeScores() {
     const ecosystemScore = cookbookStars + (id === 'anthropic' ? mcpEcosystem.github.totalStars : 0);
 
     // Growth Momentum (10%)
-    const npmGrowth = computeMoMGrowth(npmDownloads.primary[id]?.monthlyTrend);
+    const npmGrowth = npmDownloads.primary[id]?.dailyDownloads
+      ? computeMoMGrowthFromDaily(npmDownloads.primary[id].dailyDownloads)
+      : null;
 
     scores[id] = {
       npmWeekly,
@@ -143,11 +146,11 @@ export function generateInsights() {
 
   // Fastest growing npm SDK
   const growthRates = PROVIDER_ORDER
-    .filter(id => npmDownloads.primary[id])
+    .filter(id => npmDownloads.primary[id]?.dailyDownloads)
     .map(id => ({
       id,
-      growth: computeMoMGrowth(npmDownloads.primary[id].monthlyTrend),
-      growth12m: compute12MonthGrowth(npmDownloads.primary[id].monthlyTrend),
+      growth: computeMoMGrowthFromDaily(npmDownloads.primary[id].dailyDownloads),
+      growth12m: compute12MonthGrowthFromDaily(npmDownloads.primary[id].dailyDownloads),
     }))
     .filter(g => g.growth !== null);
 
@@ -171,10 +174,15 @@ export function generateInsights() {
   const anthropicNpm = npmDownloads.primary.anthropic.monthlyDownloads;
   const openaiNpm = npmDownloads.primary.openai.monthlyDownloads;
   const ratio = openaiNpm / anthropicNpm;
+  const openaiFirstMonth = getFirstMonthTotal(npmDownloads.primary.openai.dailyDownloads);
+  const anthropicFirstMonth = getFirstMonthTotal(npmDownloads.primary.anthropic.dailyDownloads);
+  const ratioYearAgo = anthropicFirstMonth > 0 ? openaiFirstMonth / anthropicFirstMonth : 0;
+  const anthropicMoM = computeMoMGrowthFromDaily(npmDownloads.primary.anthropic.dailyDownloads) || 0;
+  const openaiMoM = computeMoMGrowthFromDaily(npmDownloads.primary.openai.dailyDownloads) || 0;
   insights.push({
     type: 'competition',
     severity: 'medium',
-    text: `OpenAI's npm SDK is ${ratio.toFixed(1)}x Anthropic's in monthly downloads, down from ${(npmDownloads.primary.openai.monthlyTrend[0].downloads / npmDownloads.primary.anthropic.monthlyTrend[0].downloads).toFixed(1)}x a year ago. The gap is closing at ~${Math.round((computeMoMGrowth(npmDownloads.primary.anthropic.monthlyTrend) - computeMoMGrowth(npmDownloads.primary.openai.monthlyTrend)) * 100)} bps/month.`,
+    text: `OpenAI's npm SDK is ${ratio.toFixed(1)}x Anthropic's in monthly downloads, down from ${ratioYearAgo.toFixed(1)}x a year ago. The gap is closing at ~${Math.round((anthropicMoM - openaiMoM) * 100)} bps/month.`,
   });
 
   // Vercel AI SDK shows Anthropic gaining
