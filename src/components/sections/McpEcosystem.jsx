@@ -7,14 +7,23 @@ import Footnote from '../ui/Footnote';
 import { mcpEcosystem } from '../../data/mcp-ecosystem';
 import { npmDownloads } from '../../data/npm-downloads';
 import { formatNumber } from '../../utils/formatters';
+import { rollingAverage, formatChartDate } from '../../utils/daily-helpers';
 
 export default function McpEcosystem() {
-  const trendData = useMemo(() =>
-    mcpEcosystem.npmMonthlyTrend.map(m => ({
-      month: m.month,
-      downloads: m.downloads,
-    })),
-  []);
+  // Build daily chart data with 7-day rolling average, sampled weekly
+  const trendData = useMemo(() => {
+    const avg = rollingAverage(mcpEcosystem.dailyDownloads);
+    const points = [];
+    for (let i = 0; i < avg.length; i += 7) {
+      points.push(avg[i]);
+    }
+    // Always include the last point
+    const lastIdx = avg.length - 1;
+    if (lastIdx % 7 !== 0) {
+      points.push(avg[lastIdx]);
+    }
+    return points.map(p => ({ date: p.date, downloads: p.value }));
+  }, []);
 
   // Compare MCP to provider SDKs
   const comparison = useMemo(() => {
@@ -30,7 +39,7 @@ export default function McpEcosystem() {
   return (
     <Section number={6} title="MCP Ecosystem Spotlight" subtitle="Model Context Protocol — Anthropic's developer platform play" id="mcp">
       {/* Hero numbers */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-terminal-surface/50 border border-terminal-border rounded-lg p-5 md:col-span-2"
           style={{ borderTopColor: '#D4A574', borderTopWidth: '2px' }}>
           <p className="text-[10px] font-mono text-terminal-muted uppercase tracking-widest mb-2">
@@ -53,20 +62,10 @@ export default function McpEcosystem() {
           </p>
           <p className="text-xs font-mono text-terminal-muted mt-1">Across all MCP repos</p>
         </div>
-
-        <div className="bg-terminal-surface/50 border border-terminal-border rounded-lg p-5">
-          <p className="text-[10px] font-mono text-terminal-muted uppercase tracking-widest mb-2">
-            Registered Servers
-          </p>
-          <p className="text-3xl font-mono font-bold text-terminal-bright">
-            {mcpEcosystem.registeredServers}+
-          </p>
-          <p className="text-xs font-mono text-terminal-muted mt-1">Community + official</p>
-        </div>
       </div>
 
       {/* Growth chart */}
-      <ChartContainer height={280} title="MCP npm SDK Downloads — Monthly Growth" subtitle={`Now ${comparison.vsAnthropic}x Anthropic SDK and ${comparison.vsOpenai}x OpenAI SDK in npm downloads`}>
+      <ChartContainer height={280} title="MCP npm SDK — Daily Downloads (7-Day Avg)" subtitle={`Now ${comparison.vsAnthropic}x Anthropic SDK and ${comparison.vsOpenai}x OpenAI SDK in npm downloads`}>
         <AreaChart data={trendData}>
           <defs>
             <linearGradient id="mcpGradient" x1="0" y1="0" x2="0" y2="1">
@@ -75,7 +74,14 @@ export default function McpEcosystem() {
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-          <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={{ stroke: '#1e293b' }} tickLine={false} />
+          <XAxis
+            dataKey="date"
+            tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'JetBrains Mono' }}
+            axisLine={{ stroke: '#1e293b' }}
+            tickLine={false}
+            tickFormatter={formatChartDate}
+            interval={Math.floor(trendData.length / 6)}
+          />
           <YAxis tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={{ stroke: '#1e293b' }} tickLine={false} tickFormatter={formatNumber} />
           <Tooltip content={<CustomTooltip />} />
           <Area type="monotone" dataKey="downloads" name="MCP SDK Downloads" stroke="#D4A574" strokeWidth={2} fill="url(#mcpGradient)" />
@@ -111,9 +117,9 @@ export default function McpEcosystem() {
         </div>
       </div>
       <Footnote lines={[
-        'npm downloads from api.npmjs.org for @modelcontextprotocol/sdk. PyPI downloads from pypistats.org for "mcp" package. Both fetched 2026-03-13.',
+        'npm downloads from api.npmjs.org for @modelcontextprotocol/sdk (daily, 2025-03-01 to 2026-03-17, 7-day rolling average). PyPI downloads from pypistats.org for "mcp" package (Feb 2026 monthly total).',
         'MCP SDK downloads include both first-party (Anthropic) and third-party usage. The protocol is open and adopted by multiple providers including OpenAI, Google, and Microsoft.',
-        'Adopter list compiled from public announcements and integration documentation. "Registered Servers" is an approximate count from the MCP registry and community directories.',
+        'Adopter list compiled from public announcements and integration documentation.',
       ]} />
     </Section>
   );
