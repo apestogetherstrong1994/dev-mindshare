@@ -1,70 +1,133 @@
-// Sources: HN Algolia API, Stack Exchange API, Reddit JSON API — fetched 2026-03-13
+// Sources: HN Algolia API, Stack Exchange API, Reddit JSON API — fetched 2026-03-17
 //
-// HN search terms used:
-//   anthropic: "anthropic" OR "claude ai" OR "claude api"
-//   openai: "openai"
-//   google: "gemini ai" OR "google ai"
-//   xai: "grok xai" OR "xai"
+// HN search terms (each queried individually, counts summed with overlap possible):
+//   anthropic: "anthropic" + "claude ai" + "claude code" + "claude sonnet"
+//   openai: "openai" + "chatgpt" + "gpt-4"
+//   google: "gemini ai" + "google gemini" + "gemini pro"
+//   Note: "claude" alone is too noisy (matches people named Claude, Claude Shannon, etc.)
+//   Note: "google ai" is too broad (matches any Google AI story, not just Gemini)
+//   Note: "gpt 4" / "gpt 5" with spaces are noisy (Algolia OR-matches each word)
+//   Note: xAI excluded — "xai" matches unrelated terms on HN
 //
-// Notes:
-//   - HN monthly stories are the sum of nbHits across each provider's search queries.
-//   - HN last30d avgPoints and totalPoints/totalComments are computed from the first
-//     page of results (up to 50 hits) returned by the API for each query.
-//   - Reddit active_user_count is null because the unauthenticated JSON endpoint
-//     does not reliably return this field.
-//   - Stack Overflow "anthropic" tag has very few questions; most Claude-related
-//     questions use other tags.
+// SO: Tags are deduplicated. openai/chatgpt/chat-gpt are synonyms of openai-api.
+//   The "gemini" tag (34 questions) is for Countersoft bug-tracker, NOT Google Gemini — excluded.
+//   Claude questions searched via both tags (claude + anthropic) and title search.
+//
+// Reddit: Subscriber counts from public /about.json endpoint.
+//   r/Gemini (47K) is the crypto exchange, NOT Google AI — excluded.
+//   r/ClaudeDev (218) is a dead redirect to old Cline subreddit — excluded.
+//   r/Bard (138K) is Google's old chatbot name, now titled "r/Gemini" — included under Google general.
 
 export const discourse = {
-  lastUpdated: '2026-03-13',
+  lastUpdated: '2026-03-17',
 
   hackerNews: {
+    // Search terms: "anthropic" + "claude ai" + "claude code" + "claude sonnet"
     anthropic: {
+      searchTerms: ['anthropic', 'claude ai', 'claude code', 'claude sonnet'],
       last30d: { stories: 2190, totalPoints: 13481, totalComments: 8785, avgPoints: 89.9 },
       monthlyTrend: [
-        { month: '2026-01', stories: 820 },
-        { month: '2026-02', stories: 1706 },
-        { month: '2026-03', stories: 1024 },
+        { month: '2026-01', stories: 154 },  // 61 + 50 + 24 + 19
+        { month: '2026-02', stories: 176 },  // 69 + 49 + 37 + 20 (note: some overlap possible)
+        { month: '2026-03', stories: 213 },  // 58 + 55 + 71 + 21 (partial month, claude code surging)
       ],
     },
+    // Search terms: "openai" + "chatgpt" + "gpt-4"
     openai: {
+      searchTerms: ['openai', 'chatgpt', 'gpt-4'],
       last30d: { stories: 938, totalPoints: 11638, totalComments: 6376, avgPoints: 232.8 },
       monthlyTrend: [
-        { month: '2026-01', stories: 487 },
-        { month: '2026-02', stories: 751 },
-        { month: '2026-03', stories: 406 },
+        { month: '2026-01', stories: 792 },  // 412 + 330 + 50
+        { month: '2026-02', stories: 704 },  // 381 + 260 + 63
+        { month: '2026-03', stories: 425 },  // 206 + 175 + 44 (partial month)
       ],
     },
+    // Search terms: "gemini ai" + "google gemini" + "gemini pro"
     google: {
+      searchTerms: ['gemini ai', 'google gemini', 'gemini pro'],
       last30d: { stories: 707, totalPoints: 2134, totalComments: 1740, avgPoints: 21.3 },
       monthlyTrend: [
-        { month: '2026-01', stories: 476 },
-        { month: '2026-02', stories: 572 },
-        { month: '2026-03', stories: 320 },
-      ],
-    },
-    xai: {
-      last30d: { stories: 8763, totalPoints: 982, totalComments: 252, avgPoints: 9.8 },
-      monthlyTrend: [
-        { month: '2026-01', stories: 5904 },
-        { month: '2026-02', stories: 7676 },
-        { month: '2026-03', stories: 3762 },
+        { month: '2026-01', stories: 96 },   // 34 + 37 + 25
+        { month: '2026-02', stories: 139 },  // 55 + 42 + 42
+        { month: '2026-03', stories: 94 },   // 30 + 37 + 27 (partial month)
       ],
     },
   },
 
   stackOverflow: {
-    anthropic: { tag: 'anthropic', totalQuestions: 2, last30d: 1 },
-    openai: { tag: 'openai-api', totalQuestions: 2598, last30d: 4 },
-    google: { tag: 'google-gemini', totalQuestions: 389, last30d: 7 },
-    langchain: { tag: 'langchain', totalQuestions: 2004, last30d: 9 },
+    // Tags: claude (127) + anthropic (11) = 138. No synonyms detected.
+    anthropic: {
+      tags: ['claude', 'anthropic'],
+      totalQuestions: 138,
+      breakdown: { claude: 127, anthropic: 11 },
+    },
+    // Tags: openai-api (2895, includes openai/chatgpt/chat-gpt synonyms) + chatgpt-api (557) + gpt-4 (151) + gpt-3 (291) + openai-whisper (286) + gpt-5 (4)
+    // Upper bound — some questions carry multiple tags
+    openai: {
+      tags: ['openai-api', 'chatgpt-api', 'gpt-4', 'gpt-3', 'openai-whisper', 'gpt-5'],
+      totalQuestions: 4184,
+      breakdown: { 'openai-api': 2895, 'chatgpt-api': 557, 'gpt-3': 291, 'openai-whisper': 286, 'gpt-4': 151, 'gpt-5': 4 },
+      note: 'openai, chatgpt, chat-gpt are synonyms of openai-api (same 2895 questions). Upper bound due to possible multi-tag overlap.',
+    },
+    // Tags: google-gemini (470) + palm-api (18) + google-cloud-aiplatform (13)
+    // "gemini" tag (34) is Countersoft bug-tracker — excluded
+    google: {
+      tags: ['google-gemini', 'palm-api', 'google-cloud-aiplatform'],
+      totalQuestions: 501,
+      breakdown: { 'google-gemini': 470, 'palm-api': 18, 'google-cloud-aiplatform': 13 },
+      note: 'The "gemini" tag (34 questions) is for Countersoft bug-tracking software, not Google Gemini AI.',
+    },
+    // Tags: langchain (2189) + langchain-js (64)
+    langchain: {
+      tags: ['langchain', 'langchain-js'],
+      totalQuestions: 2253,
+      breakdown: { langchain: 2189, 'langchain-js': 64 },
+    },
   },
 
   reddit: {
-    claudeAI: { subreddit: 'ClaudeAI', subscribers: 598812, activeUsers: null },
-    openAI: { subreddit: 'OpenAI', subscribers: 2676717, activeUsers: null },
-    chatGPT: { subreddit: 'ChatGPT', subscribers: 11404193, activeUsers: null },
-    gemini: { subreddit: 'GoogleGeminiAI', subscribers: 129350, activeUsers: null },
-    localLLaMA: { subreddit: 'LocalLLaMA', subscribers: 650288, activeUsers: null },
+    // General/consumer communities
+    general: {
+      anthropic: [
+        { subreddit: 'ClaudeAI', subscribers: 619071 },
+        { subreddit: 'Anthropic', subscribers: 105233 },
+        { subreddit: 'Claude', subscribers: 44486 },
+      ],
+      openai: [
+        { subreddit: 'ChatGPT', subscribers: 11409482 },
+        { subreddit: 'OpenAI', subscribers: 2680655 },
+        { subreddit: 'ChatGPTPlus', subscribers: 15252 },
+      ],
+      google: [
+        { subreddit: 'GeminiAI', subscribers: 265848 },
+        { subreddit: 'Bard', subscribers: 138531 },  // Now titled "r/Gemini" — old chatbot name
+        { subreddit: 'GoogleGeminiAI', subscribers: 130318 },
+      ],
+      xai: [
+        { subreddit: 'grok', subscribers: 170522 },
+      ],
+    },
+    // Developer-focused communities
+    developer: {
+      anthropic: [
+        { subreddit: 'ClaudeCode', subscribers: 161575 },
+      ],
+      openai: [
+        { subreddit: 'ChatGPTCoding', subscribers: 364156 },
+        { subreddit: 'OpenAIDev', subscribers: 13990 },
+      ],
+      google: [
+        // No active developer subreddit — r/GeminiCL, r/GeminiDev, r/GoogleAIDev all 404
+      ],
+      xai: [],
+    },
+    // Reference communities (not provider-specific)
+    reference: [
+      { subreddit: 'LocalLLaMA', subscribers: 654615 },
+      { subreddit: 'LLMDevs', subscribers: 137311 },
+      { subreddit: 'Cursor', subscribers: 127501 },
+      { subreddit: 'Ollama', subscribers: 105624 },
+      { subreddit: 'LangChain', subscribers: 90643 },
+    ],
   },
 };

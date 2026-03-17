@@ -31,7 +31,7 @@ export default function DeveloperDiscourse() {
     });
   }, []);
 
-  // SO data for bar chart
+  // SO data for bar chart — using comprehensive tag counts
   const soData = useMemo(() => [
     { name: 'OpenAI', total: discourse.stackOverflow.openai.totalQuestions, color: PROVIDERS.openai.color },
     { name: 'LangChain', total: discourse.stackOverflow.langchain.totalQuestions, color: '#f59e0b' },
@@ -39,14 +39,42 @@ export default function DeveloperDiscourse() {
     { name: 'Anthropic', total: discourse.stackOverflow.anthropic.totalQuestions, color: PROVIDERS.anthropic.color },
   ], []);
 
-  // Reddit data
-  const redditData = useMemo(() => [
-    { name: 'r/ChatGPT', subscribers: discourse.reddit.chatGPT.subscribers, color: PROVIDERS.openai.color },
-    { name: 'r/OpenAI', subscribers: discourse.reddit.openAI.subscribers, color: PROVIDERS.openai.color },
-    { name: 'r/LocalLLaMA', subscribers: discourse.reddit.localLLaMA.subscribers, color: '#f59e0b' },
-    { name: 'r/ClaudeAI', subscribers: discourse.reddit.claudeAI.subscribers, color: PROVIDERS.anthropic.color },
-    { name: 'r/GoogleGeminiAI', subscribers: discourse.reddit.gemini.subscribers, color: PROVIDERS.google.color },
-  ], []);
+  // Reddit General — combined subscriber counts per provider
+  const redditGeneralData = useMemo(() => {
+    const sumSubs = (subs) => subs.reduce((s, r) => s + r.subscribers, 0);
+    return [
+      { name: 'OpenAI / ChatGPT', subscribers: sumSubs(discourse.reddit.general.openai), color: PROVIDERS.openai.color,
+        detail: discourse.reddit.general.openai.map(r => `r/${r.subreddit}`).join(', ') },
+      { name: 'Anthropic / Claude', subscribers: sumSubs(discourse.reddit.general.anthropic), color: PROVIDERS.anthropic.color,
+        detail: discourse.reddit.general.anthropic.map(r => `r/${r.subreddit}`).join(', ') },
+      { name: 'Google / Gemini', subscribers: sumSubs(discourse.reddit.general.google), color: PROVIDERS.google.color,
+        detail: discourse.reddit.general.google.map(r => `r/${r.subreddit}`).join(', ') },
+      { name: 'xAI / Grok', subscribers: sumSubs(discourse.reddit.general.xai), color: PROVIDERS.xai.color,
+        detail: discourse.reddit.general.xai.map(r => `r/${r.subreddit}`).join(', ') },
+    ];
+  }, []);
+
+  // Reddit Developer — combined subscriber counts per provider
+  const redditDevData = useMemo(() => {
+    const sumSubs = (subs) => subs.reduce((s, r) => s + r.subscribers, 0);
+    const entries = [];
+    const devAnthro = discourse.reddit.developer.anthropic;
+    const devOpenai = discourse.reddit.developer.openai;
+    const devGoogle = discourse.reddit.developer.google;
+    if (devOpenai.length > 0) entries.push({
+      name: 'OpenAI', subscribers: sumSubs(devOpenai), color: PROVIDERS.openai.color,
+      detail: devOpenai.map(r => `r/${r.subreddit}`).join(', '),
+    });
+    if (devAnthro.length > 0) entries.push({
+      name: 'Anthropic', subscribers: sumSubs(devAnthro), color: PROVIDERS.anthropic.color,
+      detail: devAnthro.map(r => `r/${r.subreddit}`).join(', '),
+    });
+    if (devGoogle.length > 0) entries.push({
+      name: 'Google', subscribers: sumSubs(devGoogle), color: PROVIDERS.google.color,
+      detail: devGoogle.map(r => `r/${r.subreddit}`).join(', '),
+    });
+    return entries;
+  }, []);
 
   return (
     <Section number={4} title="Developer Discourse & Sentiment" subtitle="Community activity across platforms" id="discourse">
@@ -59,17 +87,17 @@ export default function DeveloperDiscourse() {
             <YAxis tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={{ stroke: '#1e293b' }} tickLine={false} />
             <Tooltip content={<CustomTooltip />} />
             <Legend wrapperStyle={{ fontSize: 10, fontFamily: 'JetBrains Mono' }} />
-            {PROVIDER_ORDER.filter(id => id !== 'xai').map(id => (
+            {PROVIDER_ORDER.filter(id => discourse.hackerNews[id]).map(id => (
               <Bar key={id} dataKey={id} name={PROVIDERS[id].name} fill={PROVIDERS[id].color} radius={[2, 2, 0, 0]} />
             ))}
           </BarChart>
         </ChartContainer>
 
         {/* Panel B: Stack Overflow */}
-        <ChartContainer height={280} title="Stack Overflow — Total Questions by Tag">
+        <ChartContainer height={280} title="Stack Overflow — Total Questions (All Tags)">
           <BarChart data={soData} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-            <XAxis type="number" tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={{ stroke: '#1e293b' }} tickLine={false} />
+            <XAxis type="number" tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={{ stroke: '#1e293b' }} tickLine={false} tickFormatter={formatNumber} />
             <YAxis type="category" dataKey="name" tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={{ stroke: '#1e293b' }} tickLine={false} width={80} />
             <Tooltip content={<CustomTooltip />} />
             <Bar dataKey="total" name="Total Questions" shape={<ColoredBar />} />
@@ -77,22 +105,64 @@ export default function DeveloperDiscourse() {
         </ChartContainer>
       </div>
 
-      {/* Panel C: Reddit Community */}
-      <div className="mt-4">
-        <ChartContainer height={250} title="Reddit — Community Size (Subscribers)">
-          <BarChart data={redditData} layout="vertical">
+      {/* Reddit — two charts side by side */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
+        {/* Panel C: Reddit General Communities */}
+        <ChartContainer height={250} title="Reddit — General Communities (Combined Subscribers)">
+          <BarChart data={redditGeneralData} layout="vertical">
             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
             <XAxis type="number" tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={{ stroke: '#1e293b' }} tickLine={false} tickFormatter={formatNumber} />
-            <YAxis type="category" dataKey="name" tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={{ stroke: '#1e293b' }} tickLine={false} width={110} />
-            <Tooltip content={<CustomTooltip />} />
+            <YAxis type="category" dataKey="name" tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={{ stroke: '#1e293b' }} tickLine={false} width={120} />
+            <Tooltip content={<CustomTooltip formatter={(v, entry) => formatNumber(v)} />} />
+            <Bar dataKey="subscribers" name="Subscribers" shape={<ColoredBar />} />
+          </BarChart>
+        </ChartContainer>
+
+        {/* Panel D: Reddit Developer Communities */}
+        <ChartContainer height={250} title="Reddit — Developer Communities (Combined Subscribers)">
+          <BarChart data={redditDevData} layout="vertical">
+            <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+            <XAxis type="number" tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={{ stroke: '#1e293b' }} tickLine={false} tickFormatter={formatNumber} />
+            <YAxis type="category" dataKey="name" tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={{ stroke: '#1e293b' }} tickLine={false} width={120} />
+            <Tooltip content={<CustomTooltip formatter={(v, entry) => formatNumber(v)} />} />
             <Bar dataKey="subscribers" name="Subscribers" shape={<ColoredBar />} />
           </BarChart>
         </ChartContainer>
       </div>
+
+      {/* Subreddit breakdown detail */}
+      <div className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="bg-terminal-surface/50 border border-terminal-border rounded-lg p-3">
+          <p className="text-[10px] font-mono text-terminal-muted uppercase tracking-widest mb-2">General Subreddit Breakdown</p>
+          {redditGeneralData.map(provider => (
+            <div key={provider.name} className="flex items-center gap-2 mb-1">
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: provider.color }} />
+              <span className="text-[10px] font-mono text-terminal-muted">{provider.name}:</span>
+              <span className="text-[10px] font-mono text-terminal-text">{provider.detail}</span>
+            </div>
+          ))}
+        </div>
+        <div className="bg-terminal-surface/50 border border-terminal-border rounded-lg p-3">
+          <p className="text-[10px] font-mono text-terminal-muted uppercase tracking-widest mb-2">Developer Subreddit Breakdown</p>
+          {redditDevData.map(provider => (
+            <div key={provider.name} className="flex items-center gap-2 mb-1">
+              <span className="w-2 h-2 rounded-full" style={{ backgroundColor: provider.color }} />
+              <span className="text-[10px] font-mono text-terminal-muted">{provider.name}:</span>
+              <span className="text-[10px] font-mono text-terminal-text">{provider.detail}</span>
+            </div>
+          ))}
+          <div className="flex items-center gap-2 mb-1">
+            <span className="w-2 h-2 rounded-full bg-terminal-muted/50" />
+            <span className="text-[10px] font-mono text-terminal-muted">Google:</span>
+            <span className="text-[10px] font-mono text-terminal-muted/70 italic">No active developer subreddit found</span>
+          </div>
+        </div>
+      </div>
+
       <Footnote lines={[
-        'HN: hn.algolia.com/api. Search terms — Anthropic: "anthropic" OR "claude ai" OR "claude api"; OpenAI: "openai"; Google: "gemini ai" OR "google ai". xAI excluded (inflated by unrelated "xai" matches).',
-        'SO: api.stackexchange.com. Tag-based counts. The "anthropic" tag has very few questions (most Claude questions use other tags), so SO undercounts Anthropic activity.',
-        'Reddit: Public JSON endpoint (/r/{sub}/about.json). Subscriber counts only; active user counts unavailable without authentication.',
+        'HN: hn.algolia.com/api. Search terms — Anthropic: "anthropic" + "claude ai" + "claude code" + "claude sonnet"; OpenAI: "openai" + "chatgpt" + "gpt-4"; Google: "gemini ai" + "google gemini" + "gemini pro". Counts summed across terms (some overlap possible). xAI excluded ("xai" matches unrelated terms). "claude" alone excluded (matches people named Claude).',
+        'SO: api.stackexchange.com. All relevant tags per provider combined. openai/chatgpt/chat-gpt are synonyms of openai-api (2,895 base). The "gemini" tag (34 Qs) is for Countersoft bug-tracker, not Google AI — excluded. Upper bounds due to possible multi-tag overlap.',
+        'Reddit: Public JSON endpoint (/r/{sub}/about.json). General = consumer + discussion communities. Developer = coding/API-focused subreddits. r/Gemini (47K) is the crypto exchange — excluded. r/Bard (138K, now titled "r/Gemini") included under Google general.',
       ]} />
     </Section>
   );
