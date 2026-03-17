@@ -1,39 +1,41 @@
-// Source: GitHub API (api.github.com), fetched 2026-03-13
+// Source: GitHub API (api.github.com), fetched 2026-03-17
 // Note: google-gemini/generative-ai-python and google-gemini/generative-ai-js repos have been
 // renamed to deprecated-generative-ai-python and deprecated-generative-ai-js respectively.
+// Google's active Python SDK is now googleapis/python-genai.
 // Note: anthropics/anthropic-cookbook has been renamed to anthropics/claude-cookbooks.
 export const githubMetrics = {
-  lastUpdated: '2026-03-13',
+  lastUpdated: '2026-03-17',
   sdks: {
     anthropic: {
-      python: { repo: 'anthropics/anthropic-sdk-python', stars: 2926, forks: 516, openIssues: 143, watchers: 181 },
-      typescript: { repo: 'anthropics/anthropic-sdk-typescript', stars: 1701, forks: 245, openIssues: 106, watchers: 166 },
+      python: { repo: 'anthropics/anthropic-sdk-python', stars: 2965, forks: 528, openIssues: 148, watchers: 181 },
+      typescript: { repo: 'anthropics/anthropic-sdk-typescript', stars: 1727, forks: 249, openIssues: 109, watchers: 166 },
     },
     openai: {
-      python: { repo: 'openai/openai-python', stars: 30290, forks: 4632, openIssues: 327, watchers: 348 },
-      typescript: { repo: 'openai/openai-node', stars: 10719, forks: 1422, openIssues: 155, watchers: 155 },
+      python: { repo: 'openai/openai-python', stars: 30279, forks: 4639, openIssues: 333, watchers: 348 },
+      typescript: { repo: 'openai/openai-node', stars: 10740, forks: 1429, openIssues: 160, watchers: 155 },
     },
     google: {
-      python: { repo: 'google-gemini/generative-ai-python', stars: 2266, forks: 493, openIssues: 95, watchers: 35 },
-      typescript: { repo: 'google-gemini/generative-ai-js', stars: 1239, forks: 324, openIssues: 104, watchers: 30 },
+      python: { repo: 'googleapis/python-genai', stars: 3505, forks: 795, openIssues: 412, watchers: 35 },
+      pythonDeprecated: { repo: 'google-gemini/deprecated-generative-ai-python', stars: 2267, forks: 493, openIssues: 95, watchers: 35 },
+      typescript: { repo: 'google-gemini/deprecated-generative-ai-js', stars: 1239, forks: 323, openIssues: 104, watchers: 30 },
     },
   },
   cookbooks: {
-    anthropic: { repo: 'anthropics/anthropic-cookbook', stars: 34841, forks: 3699 },
-    openai: { repo: 'openai/openai-cookbook', stars: 72079, forks: 12145 },
-    google: { repo: 'google-gemini/cookbook', stars: 16740, forks: 2526 },
+    anthropic: { repo: 'anthropics/claude-cookbooks', stars: 35204, forks: 3741 },
+    openai: { repo: 'openai/openai-cookbook', stars: 72181, forks: 12158 },
+    google: { repo: 'google-gemini/cookbook', stars: 16770, forks: 2534 },
   },
   courses: {
-    anthropic: { repo: 'anthropics/courses', stars: 19379, forks: 1882 },
+    anthropic: { repo: 'anthropics/courses', stars: 19540, forks: 1910 },
   },
   mcp: {
-    servers: { repo: 'modelcontextprotocol/servers', stars: 80980, forks: 9884, openIssues: 474 },
-    pythonSdk: { repo: 'modelcontextprotocol/python-sdk', stars: 22119, forks: 3176 },
-    typescriptSdk: { repo: 'modelcontextprotocol/typescript-sdk', stars: 11834, forks: 1679 },
+    servers: { repo: 'modelcontextprotocol/servers', stars: 81339, forks: 9944, openIssues: 521 },
+    pythonSdk: { repo: 'modelcontextprotocol/python-sdk', stars: 22188, forks: 3184 },
+    typescriptSdk: { repo: 'modelcontextprotocol/typescript-sdk', stars: 11870, forks: 1686 },
   },
   frameworks: {
-    vercelAi: { repo: 'vercel/ai', stars: 22583, forks: 3972 },
-    langchainJs: { repo: 'langchain-ai/langchainjs', stars: 17192, forks: 3059 },
-    litellm: { repo: 'BerriAI/litellm', stars: 38912, forks: 6381 },
+    vercelAi: { repo: 'vercel/ai', stars: 22720, forks: 4003 },
+    langchainJs: { repo: 'langchain-ai/langchainjs', stars: 17237, forks: 3070 },
+    litellm: { repo: 'BerriAI/litellm', stars: 39406, forks: 6470 },
   },
 };

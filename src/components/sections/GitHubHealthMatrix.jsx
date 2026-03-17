@@ -68,7 +68,11 @@ export default function GitHubHealthMatrix() {
       </div>
 
       {/* Framework ecosystem */}
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div className="mt-5 mb-2">
+        <p className="text-xs font-mono font-semibold text-terminal-text uppercase tracking-widest">Multi-Provider Frameworks</p>
+        <p className="text-[10px] font-mono text-terminal-muted mt-0.5">Abstraction layers that let developers swap between AI providers without rewriting code</p>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
         {[
           { label: 'Vercel AI SDK', ...githubMetrics.frameworks.vercelAi },
           { label: 'LangChain JS', ...githubMetrics.frameworks.langchainJs },
@@ -85,8 +89,8 @@ export default function GitHubHealthMatrix() {
         ))}
       </div>
       <Footnote lines={[
-        'Source: GitHub REST API (api.github.com/repos). 60 req/hr unauthenticated. Snapshot values only, fetched 2026-03-13.',
-        'Google Gemini SDK repos were renamed to deprecated-* during the data collection period; current google-genai repos may differ. xAI has no public SDK repos.',
+        'Source: GitHub REST API (api.github.com/repos). 60 req/hr unauthenticated. Snapshot values only, fetched 2026-03-17.',
+        'Google\'s Python SDK row shows googleapis/python-genai (their active replacement). The old google-gemini/generative-ai-python repo has been deprecated. JS/TS row still shows the deprecated repo as no replacement exists yet. xAI has no public SDK repos.',
         'Fork:Star ratio is a rough engagement signal — higher ratios suggest more active reuse. MCP Ecosystem Stars sums modelcontextprotocol/servers, /python-sdk, and /typescript-sdk.',
       ]} />
     </Section>
