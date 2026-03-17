@@ -85,10 +85,19 @@ export default function DeveloperDiscourse() {
             <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={{ stroke: '#1e293b' }} tickLine={false} />
             <YAxis tick={{ fill: '#64748b', fontSize: 10, fontFamily: 'JetBrains Mono' }} axisLine={{ stroke: '#1e293b' }} tickLine={false} />
             <Tooltip content={<CustomTooltip />} />
-            <Legend wrapperStyle={{ fontSize: 10, fontFamily: 'JetBrains Mono' }} />
-            {['anthropic', 'openai', 'google'].map(id => (
-              <Bar key={id} dataKey={id} name={PROVIDERS[id].name} fill={PROVIDERS[id].color} radius={[2, 2, 0, 0]} />
-            ))}
+            <Legend content={() => (
+              <div style={{ display: 'flex', justifyContent: 'center', gap: 16, fontSize: 10, fontFamily: 'JetBrains Mono', marginTop: 8 }}>
+                {[{ name: 'OpenAI', color: PROVIDERS.openai.color }, { name: 'Anthropic', color: PROVIDERS.anthropic.color }, { name: 'Google', color: PROVIDERS.google.color }].map(item => (
+                  <span key={item.name} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span style={{ width: 10, height: 10, backgroundColor: item.color, borderRadius: 2, display: 'inline-block' }} />
+                    {item.name}
+                  </span>
+                ))}
+              </div>
+            )} />
+            <Bar dataKey="openai" name="OpenAI" fill={PROVIDERS.openai.color} radius={[2, 2, 0, 0]} />
+            <Bar dataKey="anthropic" name="Anthropic" fill={PROVIDERS.anthropic.color} radius={[2, 2, 0, 0]} />
+            <Bar dataKey="google" name="Google" fill={PROVIDERS.google.color} radius={[2, 2, 0, 0]} />
           </BarChart>
         </ChartContainer>
 
